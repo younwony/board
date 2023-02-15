@@ -1,20 +1,17 @@
-package wony.dev.board.BulletinBoard;
+package wony.dev.board.board;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import wony.dev.board.BulletinBoard.model.BoardDto;
+import wony.dev.board.board.model.BoardDto;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 class BoardControllerTest {

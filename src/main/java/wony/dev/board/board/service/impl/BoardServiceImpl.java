@@ -1,12 +1,12 @@
-package wony.dev.board.BulletinBoard.service.impl;
+package wony.dev.board.board.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wony.dev.board.BulletinBoard.model.Board;
-import wony.dev.board.BulletinBoard.model.BoardDto;
-import wony.dev.board.BulletinBoard.repository.BoardRepository;
-import wony.dev.board.BulletinBoard.service.BoardService;
+import wony.dev.board.board.model.Board;
+import wony.dev.board.board.model.BoardDto;
+import wony.dev.board.board.repository.BoardRepository;
+import wony.dev.board.board.service.BoardService;
 
 import java.util.List;
 import java.util.stream.Collectors;

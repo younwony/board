@@ -1,4 +1,4 @@
-package wony.dev.board.BulletinBoard.repository;
+package wony.dev.board.board.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import wony.dev.board.BulletinBoard.model.Board;
-import wony.dev.board.BulletinBoard.model.BoardDto;
+import wony.dev.board.board.model.Board;
+import wony.dev.board.board.model.BoardDto;
 
 import java.util.List;
 

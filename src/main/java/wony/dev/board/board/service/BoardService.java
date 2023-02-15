@@ -1,6 +1,6 @@
-package wony.dev.board.BulletinBoard.service;
+package wony.dev.board.board.service;
 
-import wony.dev.board.BulletinBoard.model.BoardDto;
+import wony.dev.board.board.model.BoardDto;
 
 import java.util.List;
 
