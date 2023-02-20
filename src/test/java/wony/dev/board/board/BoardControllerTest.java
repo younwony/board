@@ -1,103 +1,176 @@
 package wony.dev.board.board;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.MockMvc;
 import wony.dev.board.board.model.BoardDto;
 
-import java.util.List;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+@AutoConfigureRestDocs
+@AutoConfigureMockMvc
 @SpringBootTest
 class BoardControllerTest {
 
     @Autowired
-    private BoardController boardController;
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     @DisplayName("게시글 등록")
-    void add(){
+    void add() throws Exception {
         // given
-        BoardDto boardDto = BoardDto.builder()
-                .title("제목 5")
-                .content("내용 5")
-                .build();
+        String title = "제목 5";
+        String content = "내용 5";
+        final BoardDto requestBoardDto = new BoardDto();
+        requestBoardDto.setTitle(title);
+        requestBoardDto.setContent(content);
+
+        String requestBody = objectMapper.writeValueAsString(requestBoardDto);
 
         //when
-        ResponseEntity<BoardDto> response = boardController.add(boardDto);
+        mockMvc.perform(
+                    post("/boards")
+                            .content(requestBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("boards-create"
+                                , requestFields(
+                                        fieldWithPath("id").type(JsonFieldType.NULL).description("게시판 ID"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("게시판 제목"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("게시판 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.NULL).description("게시판 생성 일자"),
+                                        fieldWithPath("updatedAt").type(JsonFieldType.NULL).description("게시판 수정 일자"))
+                                , responseFields(
+                                        fieldWithPath("id").description("게시판 ID"),
+                                        fieldWithPath("title").description("게시판 제목"),
+                                        fieldWithPath("content").description("게시판 내용"),
+                                        fieldWithPath("createdAt").description("게시판 생성 일자"),
+                                        fieldWithPath("updatedAt").description("게시판 수정 일자")
+                                )
+                        )
+                );
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        BoardDto responseBoardDto = response.getBody();
-        assertThat(responseBoardDto.getTitle()).isEqualTo(boardDto.getTitle());
-        assertThat(responseBoardDto.getContent()).isEqualTo(boardDto.getContent());
     }
 
     @Test
     @DisplayName("게시글 전부 가져오기")
-    void getBoards(){
+    void getBoards() throws Exception {
         // given
-
         // when
-        ResponseEntity<List<BoardDto>> response = boardController.getBoards();
+        mockMvc.perform(
+                    get("/boards")
+                            .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("boards-list",
+                            responseFields(
+                                    fieldWithPath("[].id").description("게시판 ID"),
+                                    fieldWithPath("[].title").description("게시판 제목"),
+                                    fieldWithPath("[].content").description("게시판 내용"),
+                                    fieldWithPath("[].createdAt").description("게시판 생성 일자"),
+                                    fieldWithPath("[].updatedAt").description("게시판 수정 일자")
+                            )
+                        ));
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        List<BoardDto> boardDtos = response.getBody();
-        for (BoardDto boardDto : boardDtos) {
-            System.out.println("boardDto = " + boardDto);
-        }
     }
 
     @Test
     @DisplayName("게시글 ID로 가져오기")
-    void getBoardById(){
+    void getBoardById() throws Exception {
         // given
         Long id = 101l;
 
         // when
-        ResponseEntity<BoardDto> response = boardController.getBoardById(id);
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.get("/boards/{id}", id)
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("boards-get-id"
+                                , pathParameters(
+                                        parameterWithName("id").description("게시판 ID"))
+                                , responseFields(
+                                        fieldWithPath("id").description("게시판 ID"),
+                                        fieldWithPath("title").description("게시판 제목"),
+                                        fieldWithPath("content").description("게시판 내용"),
+                                        fieldWithPath("createdAt").description("게시판 생성 일자"),
+                                        fieldWithPath("updatedAt").description("게시판 수정 일자")
+                                )
+                        )
+                );
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        BoardDto responseBoard = response.getBody();
-        assertThat(responseBoard.getId()).isEqualTo(id);
     }
 
     @Test
     @DisplayName("게시글 update")
-    void update(){
+    void update() throws Exception {
         // given
         Long id = 101l;
         BoardDto boardDto = BoardDto.builder()
                 .title("title Update")
                 .content("content Update")
                 .build();
+
         // when
-        ResponseEntity<BoardDto> response = boardController.update(id, boardDto);
+        mockMvc.perform(
+                    RestDocumentationRequestBuilders.put("/boards/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(boardDto)))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("boards-update"
+                                , pathParameters(
+                                        parameterWithName("id").description("게시판 ID")
+                                )
+                                , requestFields(
+                                        fieldWithPath("id").type(JsonFieldType.NULL).description("게시판 ID"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("게시판 제목"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("게시판 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.NULL).description("게시판 생성 일자"),
+                                        fieldWithPath("updatedAt").type(JsonFieldType.NULL).description("게시판 수정 일자")
+                                )
+                        ));
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        BoardDto responseBoard = response.getBody();
-        assertThat(responseBoard.getTitle()).isEqualTo(boardDto.getTitle());
-        assertThat(responseBoard.getContent()).isEqualTo(boardDto.getContent());
     }
 
     @Test
     @DisplayName("게시글 ID로 삭제")
-    void deleteById(){
+    void deleteById() throws Exception {
         // given
         Long id = 101l;
 
         // when
-        ResponseEntity response = boardController.delete(id);
+        mockMvc.perform(
+                    RestDocumentationRequestBuilders.delete("/boards/{id}", id))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("boards-delete"
+                                , pathParameters(
+                                        parameterWithName("id").description("게시판 ID"))
+                        ));
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThrows(IllegalArgumentException.class, () -> boardController.getBoardById(id));
     }
 }

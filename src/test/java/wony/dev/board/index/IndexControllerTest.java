@@ -1,4 +1,4 @@
-package wony.dev.board;
+package wony.dev.board.index;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,22 +16,22 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @SpringBootTest
-class BoardApplicationTests {
+class IndexControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Test
-    @DisplayName("Index 호출")
-    void callIndex() throws Exception {
+    @DisplayName("index")
+    void index() throws Exception {
         // given
-
         // when
         this.mockMvc.perform(
                         get("/")
-                            .accept(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andDo(
@@ -41,5 +41,4 @@ class BoardApplicationTests {
 
         // then
     }
-
 }
