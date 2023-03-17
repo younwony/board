@@ -29,10 +29,10 @@ class IndexControllerTest {
     void index() throws Exception {
         // given
         // when
-        this.mockMvc.perform(
-                        get("/")
-                                .accept(MediaType.APPLICATION_JSON)
-                )
+        mockMvc.perform(
+                get("/")
+                        .accept(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
                 .andDo(
                         document("index",

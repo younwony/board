@@ -18,7 +18,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
 
     @Override
-    public BoardDto register(BoardDto boardDto) {
+    public BoardDto save(BoardDto boardDto) {
         return BoardDto.of(boardRepository.save(boardDto.toEntity()));
     }
 
@@ -46,5 +46,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void deleteById(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAll() {
+        boardRepository.deleteAll();
     }
 }

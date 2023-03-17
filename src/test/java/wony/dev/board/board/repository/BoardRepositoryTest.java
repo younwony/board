@@ -1,5 +1,6 @@
 package wony.dev.board.board.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,11 @@ class BoardRepositoryTest {
 
     @Autowired
     BoardRepository boardRepository;
+
+    @BeforeEach
+    void setUp(){
+        boardRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("게시글 등록")
@@ -46,12 +52,19 @@ class BoardRepositoryTest {
     @DisplayName("게시글 ID로 찾기")
     void findById(){
         // given
-        Long id = 101l;
+        BoardDto boardDto = BoardDto.builder()
+                .title("title test")
+                .content("content test")
+                .build();
+        Board board = boardDto.toEntity();
+        Board saveBoard = boardRepository.save(board);
+        Long saveBoardId = saveBoard.getId();
+
         // when
-        Board findBoard = boardRepository.findById(id)
-                .orElseGet(Board::new);
+        Board findBoard = boardRepository.findById(saveBoardId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + saveBoardId));
         // then
-        assertThat(findBoard.getId()).isEqualTo(id);
+        assertThat(findBoard.getId()).isEqualTo(saveBoardId);
     }
 
     @Test
@@ -70,29 +83,43 @@ class BoardRepositoryTest {
     @DisplayName("게시글 수정하기")
     void mod(){
         // given
-        long id = 101l;
         BoardDto boardDto = BoardDto.builder()
                 .title("title Update")
                 .content("content Update")
                 .build();
+        Board saveBoard = boardRepository.save(boardDto.toEntity());
+        Long id = saveBoard.getId();
 
-        Board board = boardRepository.findById(id).get();
+        Board findBoard = boardRepository.findById(id).get();
+        boardDto.setContent("content Update2");
+        boardDto.setTitle("title Update2");
+        boardDto.toEntity();
+
         // when
-        board.update(boardDto);
+        findBoard.update(boardDto);
 
         // then
-        Board saveBoard = boardRepository.findById(id).get();
-        assertThat(board.getTitle()).isEqualTo(saveBoard.getTitle());
-        assertThat(board.getContent()).isEqualTo(saveBoard.getContent());
+        Board updateBoard = boardRepository.findById(id).get();
+        assertThat(findBoard.getTitle()).isEqualTo(updateBoard.getTitle());
+        assertThat(findBoard.getContent()).isEqualTo(updateBoard.getContent());
+
     }
 
     @Test
     @DisplayName("게시글 ID로 삭제하기")
     void deleteById(){
         // given
-        Long id = 101l;
+        BoardDto boardDto = BoardDto.builder()
+                .title("title test")
+                .content("content test")
+                .build();
+        Board board = boardDto.toEntity();
+        Board saveBoard = boardRepository.save(board);
+        Long id = saveBoard.getId();
+
         // when
         boardRepository.deleteById(id);
+
         // then
         assertThat(boardRepository.findById(id).isEmpty()).isTrue();
     }

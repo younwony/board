@@ -21,18 +21,19 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping
-    public ResponseEntity add(@RequestBody BoardDto boardDto){
-        BoardDto registerBoard = boardService.register(boardDto);
+    public ResponseEntity saveBoard(@RequestBody BoardDto boardDto){
+        BoardDto registerBoard = boardService.save(boardDto);
         return ResponseEntity.ok(boardService.findById(registerBoard.getId()));
     }
     @GetMapping
-    public ResponseEntity getBoards(){
+    public ResponseEntity boards(){
         return ResponseEntity.ok(boardService.findAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity getBoardById(@PathVariable Long id){
+    public ResponseEntity board(@PathVariable Long id){
         return ResponseEntity.ok(boardService.findById(id));
     }
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable Long id, @RequestBody BoardDto boardDto){
         boardService.update(id, boardDto);
