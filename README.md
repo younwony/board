@@ -6,3 +6,4 @@
 - Spring API 문서화
 - Java Record
 - spring validation 적용
+- infra 구성 ([Infra.md](Infra.md))
