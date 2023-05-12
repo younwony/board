@@ -51,3 +51,7 @@ task copyDocument(type: Copy) {
 build {
     dependsOn copyDocument
 }
+
+jar {
+    enabled = false // plain jar task is not needed
+}
